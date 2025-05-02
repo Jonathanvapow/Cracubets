@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRACUBETS - Reconhecimento de Bilhetes</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Tesseract.js via CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
+    <!-- Font Awesome para ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Scripts do site -->
+    <script src="bilhetes-templates.js"></script>
+    <script src="image-overlay.js"></script>
+    <script src="auth.js"></script>
+    <script src="script.js"></script>
+</head>
+<body>
+  <div style="text-align:center; padding:20px;">
+    <img id="qrcode" style="width:250px;height:250px;" />
+  </div>
+    <div class="theme-toggle">
+        <button id="themeToggleBtn" class="theme-btn">
+            <i class="fas fa-moon" id="themeIcon"></i>
+        </button>
+    </div>
+    
+    <div class="container">
+        <header>
+            <div class="logo-container">
+                <img src="logo.png" alt="CRACUBETS Logo" class="logo">
+            </div>
+            <h1>Reconhecimento de Bilhetes</h1>
+            <!-- Botão de logout -->
+            <button id="logoutButton" class="btn btn-small" style="position: absolute; top: 20px; right: 20px; background-color: #dc3545;">
+                <i class="fas fa-sign-out-alt"></i> Sair
+            </button>
+        </header>
+
+        <div class="football-animation">
+            <div class="football"></div>
+        </div>
+
+        <!-- Contador de cambistas -->
+        <div class="cambistas-counter">
+            <i class="fas fa-users"></i> <span id="cambistasCounter">0</span> cambistas online
+        </div>
+
+        <!-- Nova seção de descrição do site -->
+        <section class="site-description">
+            <h2>Sobre a Ferramenta <button id="toggleDescriptionBtn" class="btn-toggle"><i class="fas fa-chevron-down"></i></button></h2>
+            <div class="description-content" id="descriptionContent" style="display: none;">
+                <p>Simplifique a criação de bilhetes prontos para seus clientes! Siga estes passos:</p>
+                <div class="features">
+                    <div class="feature-item">
+                        <i class="fas fa-ticket-alt"></i>
+                        <span>Faça o bilhete na sua banca de apostas preferida.</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-camera"></i>
+                        <span>Tire ou pegue a imagem do bilhete gerado.</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-upload"></i>
+                        <span>Envie a imagem do bilhete aqui no nosso site.</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-link"></i>
+                        <span>O site pedirá um código. Gere este código no site <a href="https://cracubets-com.jogos.app" target="_blank">cracubets-com.jogos.app</a>.</span>
+                    </div>
+                     <div class="feature-item">
+                        <i class="fas fa-keyboard"></i>
+                        <span>Insira o código de 6 dígitos solicitado aqui.</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-file-alt"></i>
+                        <span>Pronto! O site gerará o bilhete formatado em texto para você compartilhar.</span>
+                    </div>
+                </div>
+                <p class="warning-text" style="color: red; font-weight: bold; margin-top: 15px; text-align: center;"><i class="fas fa-exclamation-triangle"></i> Atenção: É necessário enviar a imagem do bilhete <strong>antes</strong> de inserir o código. O site precisa reconhecer a imagem primeiro.</p>
+                <p class="compatibility-warning" style="color: #ff6600; font-weight: bold; margin-top: 10px; text-align: center; border: 1px dashed #ff6600; padding: 8px; border-radius: 5px;"><i class="fas fa-mobile-alt"></i> <strong>Compatibilidade:</strong> A funcionalidade de reconhecimento de imagem pode variar entre dispositivos. Recomenda-se o uso em navegadores atualizados.</p>
+                <p class="highlight-text">Economize tempo e envie bilhetes profissionais para seus clientes de forma rápida e fácil!</p>
+                <p class="update-notice"><i class="fas fa-bell"></i> Em breve mais atualizações e funcionalidades!</p>
+            </div>
+        </section>
+
+        <!-- Nova seção para o vídeo tutorial -->
+        <section class="tutorial-video-section">
+            <h2>Vídeo Tutorial</h2>
+            <div class="video-container">
+                <video width="100%" controls>
+                    <source src="tutorial.mp4" type="video/mp4">
+                    Seu navegador não suporta o elemento de vídeo.
+                </video>
+            </div>
+        </section>
+
+        <main>
+            <!-- Nova seção para controle de sons -->
+            <section class="sound-control-section">
+                <h2>Sons do Site</h2>
+                <div class="sound-toggle">
+                    <label class="switch">
+                        <input type="checkbox" id="soundToggle" checked>
+                        <span class="slider round"></span>
+                    </label>
+                    <span id="soundStatus">Sons ativados</span>
+                </div>
+            </section>
+
+            <!-- Nova seção para calculadoras -->
+            <section class="calculators-section">
+                <h2>Calculadoras</h2>
+                <div class="calculators-buttons">
+                    <button id="percentCalcBtn" class="btn btn-secondary">
+                        <i class="fas fa-percentage"></i> Calculadora de Porcentagem
+                    </button>
+                    <button id="bancaCalcBtn" class="btn btn-secondary">
+                        <i class="fas fa-money-bill-wave"></i> Calculadora de Banca
+                    </button>
+                    <a href="whatsapp_tool.html" class="btn btn-secondary" style="background-color: #25D366;">
+                        <i class="fab fa-whatsapp"></i> Ferramenta WhatsApp
+                    </a>
+
+                </div>
+            </section>
+
+            <!-- Nova seção para seleção de título obrigatória -->
+            <section class="title-selection-section">
+                <h2>Passo 1: Escolha o Título do Bilhete</h2>
+                <div class="title-options">
+                    <div class="title-option">
+                        <input type="radio" id="titleDefault" name="titleOption" value="default" checked>
+                        <label for="titleDefault">Usar título padrão (FÉZINHA DA MANHÃ/TARDE/NOITE)</label>
+                    </div>
+                    <div class="title-option">
+                        <input type="radio" id="titleCustom" name="titleOption" value="custom">
+                        <label for="titleCustom">Digitar título personalizado</label>
+                    </div>
+                    <div id="customTitleContainer" style="display: none; margin-top: 10px;">
+                        <input type="text" id="customTitleInput" class="form-input" placeholder="Digite seu título personalizado" maxlength="30">
+                    </div>
+                    <button id="confirmTitleButton" class="btn" style="margin-top: 15px;">
+                        <i class="fas fa-check"></i> Confirmar Título
+                    </button>
+                </div>
+            </section>
+
+            <!-- Nova seção para seleção de modelo de bilhete -->
+            <section class="template-selection-section" id="templateSelectionSection" style="display: none;">
+                <h2>Passo 2: Escolha o Modelo de Bilhete</h2>
+                <div class="template-options">
+                    <div class="template-option">
+                        <input type="radio" id="templatePadrao" name="templateOption" value="padrao" checked>
+                        <label for="templatePadrao">Modelo Padrão</label>
+                        <div class="template-preview">Bilhete com formato tradicional</div>
+                    </div>
+                    <div class="template-option">
+                        <input type="radio" id="templateEstrelas" name="templateOption" value="estrelas">
+                        <label for="templateEstrelas">Modelo Premium ⭐</label>
+                        <div class="template-preview">Bilhete com estrelas e formato premium</div>
+                    </div>
+                    <div class="template-option">
+                        <input type="radio" id="templateFogo" name="templateOption" value="fogo">
+                        <label for="templateFogo">Modelo Quente 🔥</label>
+                        <div class="template-preview">Bilhete com emojis de fogo e destaque</div>
+                    </div>
+                    <div class="template-option">
+                        <input type="radio" id="templateVip" name="templateOption" value="vip">
+                        <label for="templateVip">Modelo VIP 👑</label>
+                        <div class="template-preview">Bilhete exclusivo com mais opções de valores</div>
+                    </div>
+                    <div class="template-option">
+                        <input type="radio" id="templateMinimalista" name="templateOption" value="minimalista">
+                        <label for="templateMinimalista">Modelo Minimalista</label>
+                        <div class="template-preview">Bilhete simples e direto</div>
+                    </div>
+                    <button id="confirmTemplateButton" class="btn" style="margin-top: 15px;">
+                        <i class="fas fa-check"></i> Confirmar Modelo
+                    </button>
+                </div>
+            </section>
+
+            <section class="upload-section" id="uploadSection" style="display: none;">
+                <h2>Passo 3: Envie a Imagem do Bilhete</h2>
+                <div class="upload-area" id="uploadArea">
+                    <input type="file" id="imageUpload" accept="image/jpeg, image/png">
+                    <label for="imageUpload" class="upload-label">
+                        <i class="fas fa-upload"></i>
+                        <span>Clique ou arraste uma imagem do bilhete</span>
+                    </label>
+                </div>
+                <div class="preview-container" id="previewContainer" style="display: none;">
+                    <img id="imagePreview" alt="Preview do bilhete">
+                    <button id="processButton" class="btn">
+                        <i class="fas fa-cog"></i> Processar Bilhete
+                    </button>
+                </div>
+                <div id="loadingIndicator" class="loading" style="display: none;">
+                    <span>Processando imagem...</span>
+                    <div class="spinner"></div>
+                </div>
+                
+                <!-- Novo botão para inserir código manualmente -->
+                <div class="manual-code-section">
+                    <p class="warning-text-small" style="color: #e67e22; font-size: 0.9em; margin-bottom: 10px; text-align: center;"><i class="fas fa-info-circle"></i> Lembre-se: Envie a imagem do bilhete antes de inserir o código.</p>
+                    <button id="manualCodeButton" class="btn btn-secondary">
+                        <i class="fas fa-keyboard"></i> Inserir Código Manualmente
+                    </button>
+                </div>
+            </section>
+
+
+
+            <!-- Seção de resultados -->
+            <section id="resultsSection" class="results-section" style="display: none;">
+                <h2>Bilhete Gerado</h2>
+                <div class="ticket-container" id="ticketContainer"></div>
+                <div class="action-buttons">
+                    <button id="copyButton" class="btn">
+                        <i class="fas fa-copy"></i> Copiar Bilhete
+                    </button>
+                    <button id="clearButton" class="btn btn-danger">
+                        <i class="fas fa-trash"></i> Limpar
+                    </button>
+                </div>
+
+            </section>
+
+            <!-- Modal para inserção manual de código -->
+            <div id="codeModal" class="modal" style="display: none;">
+                <div class="modal-content">
+                    <span class="close-button">&times;</span>
+                    <h2>Inserir Código do Bilhete</h2>
+                    <div class="code-input-container">
+                        <input type="text" id="manualCodeInput" maxlength="6" placeholder="Digite o código de 6 dígitos" pattern="[0-9]{6}">
+                        <button id="applyCodeButton" class="btn">Aplicar Código</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal para calculadora de porcentagem -->
+            <div id="percentCalcModal" class="modal" style="display: none;">
+                <div class="modal-content">
+                    <span class="close-button">&times;</span>
+                    <h2>Calculadora de Porcentagem</h2>
+                    <div class="percent-calc-container">
+                        <div class="calc-input-group">
+                            <label for="percentValue">Porcentagem (%)</label>
+                            <input type="number" id="percentValue" placeholder="Ex: 10">
+                        </div>
+                        <div class="calc-input-group">
+                            <label for="percentOf">De</label>
+                            <input type="number" id="percentOf" placeholder="Ex: 200">
+                        </div>
+                        <button id="calcPercentBtn" class="btn">Calcular</button>
+                        <div id="percentResult" class="calc-result">Resultado: 0.00</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal para calculadora de banca -->
+            <div id="bancaCalcModal" class="modal" style="display: none;">
+                <div class="modal-content">
+                    <span class="close-button">&times;</span>
+                    <h2>Calculadora de Fechamento de Banca</h2>
+                    <div class="banca-calc-container">
+                        <div class="calc-input-group">
+                            <label for="gerenteName">Nome do Gerente</label>
+                            <input type="text" id="gerenteName" placeholder="Ex: João">
+                        </div>
+                        <div class="calc-input-group">
+                            <label>Valor dos Bancos</label>
+                            <div class="input-with-sign">
+                                <div class="sign-selector" id="bancosSignSelector">
+                                    <button type="button" class="sign-btn active" data-sign="+">+</button>
+                                    <button type="button" class="sign-btn" data-sign="-">-</button>
+                                </div>
+                                <input type="number" id="bancosValue" placeholder="Ex: 1000">
+                            </div>
+                        </div>
+                        <div class="calc-input-group">
+                            <label>Valor da Banca</label>
+                            <div class="input-with-sign">
+                                <div class="sign-selector" id="bancaSignSelector">
+                                    <button type="button" class="sign-btn active" data-sign="+">+</button>
+                                    <button type="button" class="sign-btn" data-sign="-">-</button>
+                                </div>
+                                <input type="number" id="bancaValue" placeholder="Ex: 500">
+                            </div>
+                        </div>
+                        <div class="calc-input-group">
+                            <label for="descriptionText">Observações (opcional)</label>
+                            <textarea id="descriptionText" rows="2" placeholder="Ex: Pagamentos pendentes"></textarea>
+                        </div>
+                        <button id="calcBancaBtn" class="btn">Calcular</button>
+                        <div id="bancaResultText" class="calc-result"></div>
+                        <button id="copyBancaResultBtn" class="btn btn-small" style="margin-top: 10px;">
+                            <i class="fas fa-copy"></i> Copiar Resultado
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal para bilhetes salvos -->
+            <div id="ticketsModal" class="modal" style="display: none;">
+                <div class="modal-content">
+                    <span class="close-button">&times;</span>
+                    <h2>Bilhetes Salvos</h2>
+                    <div id="savedTicketsContainer" class="saved-tickets-container">
+                        <div id="modalTicketsList"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <div class="saved-tickets-section">
+                <h2>Bilhetes Salvos</h2>
+                <button id="viewSavedButton" class="btn btn-secondary">
+                    <i class="fas fa-list"></i> Ver Bilhetes Salvos
+                </button>
+            </div>
+            <p>&copy; 2023 CRACUBETS. Todos os direitos reservados.</p>
+        </footer>
+    </div>
+
+    <!-- Sons do site -->
+    <audio id="buttonSound" src="button-sound.mp3" preload="auto"></audio>
+    <audio id="goalSound" src="goal-sound.mp3" preload="auto"></audio>
+</body>
+</html>
